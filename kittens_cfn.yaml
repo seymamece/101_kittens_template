@@ -11,10 +11,7 @@ Description: |
   is downloaded from my Public Github repository,
   then deployed on Apache Web Serve
   
-Parameters:
-  LatestAmiId:
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
 
 Resources:
   WebServerSecurityGroup:
@@ -35,7 +32,7 @@ Resources:
   WebServerHost:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !Ref LatestAmiId
+      ImageId: ami-01c647eace872fc02
       InstanceType: t2.micro
       KeyName: firstkey
       SecurityGroupIds:
