@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This my Cfn template for EC2 with Security Group
+Resources:
+
+  MyWebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-01c647eace872fc02
+      InstanceType: t2.micro
+      KeyName: firstkey
+      SecurityGroupIds: 
+        - !Ref MySecGrp
+      Tags: 
+        - Key: Name
+          Value: !Sub Seyma ${AWS::StackName}
+      UserData: 
+        Fn::Base64: |
+            #! /bin/bash
+            yum update -y
+            yum install httpd -y            
+            FOLDER="https://raw.githubusercontent.com/seymamece/101_kittens_template/main/static-web"
+            cd /var/www/html
+            wget ${FOLDER}/index.html
+            wget ${FOLDER}/cat0.jpg
+            wget ${FOLDER}/cat1.jpg
+            wget ${FOLDER}/cat2.jpg
+            systemctl start httpd
+            systemctl enable httpd
+
+  MySecGrp:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ssh and http # Required
+      GroupName: seymasecportfolio
+
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Value: env
+          Key: dev
+  
+Outputs:
+  LogicalID:
+    Description: This output gives the URL of EC2
+    Value: !Sub
+      - http://${PublicAddress}
+      - PublicAddress: !GetAtt MyWebServer.PublicDnsName
